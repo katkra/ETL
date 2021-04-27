@@ -11,4 +11,4 @@ read:public_key
 read:gpg_key
 
 3. copy personal access token into headers after "bearer -> headers={"Authorization": "bearer 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"}
-4. 
+4. run main.py "someGitHubOrganization"
