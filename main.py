@@ -1,22 +1,45 @@
 import json
 import pandas as pd
 import requests
+import argparse
 from sqlalchemy import create_engine
+import sys
 import sqlite3 as lite
 import sys
 from pandas.io import sql
 from pandas import DataFrame
-headers={"Authorization": "bearer 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"}
+
+
+# Create the parser
+my_parser = argparse.ArgumentParser(prog='CLI',description='Organization information from GitHub')
+
+# Add the arguments
+my_parser.add_argument('Organization',
+                       metavar='organization',
+                       type=str,
+                       help='the organization to get from GitHub')
+
+# Execute the parse_args() method
+args = my_parser.parse_args()
+
+input_organization = args.Organization
+
+
+
+headers={"Authorization": "bearer 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"}
 
 url = 'https://api.github.com/graphql'
-#ToDo: read in all data about Organizations but later create database entries only with few selected entries
+#ToDo: could read in all data about Organizations but later create database entries only with few selected entries
+
 #ToDo exchange specific organization with variables-values will be set by user input
 #ToDo Pagination-get all repositories and members (not just first 5)
+#ToDo CommitConnection(Commit)database-sha
 
-#query ($Orga:String!){
+#variables={"Orga":sys.argv[1]}
+variables={"Orga":input_organization}
 query_exOrganization="""
 query{
-  organization(login: "github"){
+  organization(login: "%(Orga)s"){
     name
     url
     id
@@ -41,7 +64,7 @@ query{
     }
     }
     }
-  }"""
+  }"""%(variables)
 #variables={"Orga":'github'}
 #ToDo create Repository database with more detailed data-post request,save in file,normalize then create database
 query_exRepo = """"
@@ -88,6 +111,7 @@ df_Organization=dfOrganization.loc[:,['id','name','url','description']]
 
 
 dfMembers = pd.json_normalize(df_members,record_path=['nodes'])
+dfMembers=dfMembers.loc[:,['id']]
 dfMembers['organization_id']=df_Organization['id'][0]
 dfRepo=pd.json_normalize(df_repo,record_path=['nodes'])
 dfRepo['organization_id'] = df_Organization['id'][0]
