@@ -20,7 +20,7 @@ args = my_parser.parse_args()
 #User input argument
 input_organization = args.Organization
 
-headers={"Authorization": "bearer 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"}
+headers={"Authorization": "bearer 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"}
 
 url = 'https://api.github.com/graphql'
 #ToDo: could read in all data about Organizations but later create database entries only with few selected entries
@@ -65,7 +65,7 @@ query{
 r = (requests.post(url, json={'query': query_exOrganization},headers=headers))
 #is transformed to json and written into a .json file
 json_data = json.loads(r.text)
-print(r_json)
+r_json=r.json()
 jsonString = json.dumps(r_json)
 jsonFile = open("%(Orga)s_data.json", "w")
 jsonFile.write(jsonString)
